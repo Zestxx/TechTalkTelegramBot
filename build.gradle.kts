@@ -11,6 +11,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("com.github.pengrad:java-telegram-bot-api:7.2.1")
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
 }
 
 tasks.test {
