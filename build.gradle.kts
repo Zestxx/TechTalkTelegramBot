@@ -3,11 +3,13 @@ plugins {
 }
 
 group = "com.tech.talk.bot"
-version = "1.0-SNAPSHOT"
+version = "0.1"
 
 repositories {
     mavenCentral()
 }
+
+
 
 dependencies {
     testImplementation(kotlin("test"))
@@ -18,6 +20,18 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(17)
+}
+
+// Add a task to create a fat JAR that includes the Main-Class attribute in the manifest
+tasks.jar {
+    manifest {
+        attributes(
+            "Main-Class" to "com.example.telegrambot.TechTalkBotKt"
+        )
+    }
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
