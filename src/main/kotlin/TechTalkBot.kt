@@ -70,7 +70,7 @@ class TechTalkBot(botToken: String, adminId: Long) {
             State.Start -> {
                 sendMessage(
                     chatId,
-                    "Привет. Это бот для сбора тем и вопросов для обсуждения на TechTalk встречах \uD83D\uDE09."
+                    "Привет. Это бот сбора тем и вопросов для обсуждения на TechTalk встречах \uD83D\uDE09."
                 )
                 Bot.updateUserState(chatId, State.Idle)
                 handleMessageByState(message)
