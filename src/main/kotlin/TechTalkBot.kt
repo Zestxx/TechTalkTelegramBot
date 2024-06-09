@@ -149,12 +149,15 @@ fun forwardMessageTo(message: Message, toChatId: Long) {
     Bot.instance.execute(ForwardMessage(message.chat().id(), toChatId, message.messageId()))
 }
 
-fun main(args: Array<String>) {
+fun main() {
     // Токен бота который можно получить у https://t.me/BotFather
-    val botToken = args[0]
+    val botToken = System.getenv()["BOT_TOKEN"]
 
     // Id чата между ботом и админом которому будут сыпаться все заявки
-    val adminId = args[1]
+    val adminId = System.getenv()["ADMIN_ID"]
+
+    requireNotNull(botToken) { "BOT_TOKEN environment variable should be initialized" }
+    requireNotNull(adminId) { "ADMIN_ID environment variable should be initialized" }
 
     val bot = TechTalkBot(botToken, adminId.toLong())
     bot.start()
