@@ -1,4 +1,4 @@
-#TechTalkTelegramBot
+# TechTalkTelegramBot
 
 Бот для сбора тем и вопросов для еженедельных встреч команды. 
 Для запуска на сервере используется docker.
