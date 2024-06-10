@@ -5,10 +5,10 @@ import com.pengrad.telegrambot.UpdatesListener
 import com.pengrad.telegrambot.model.Message
 import com.pengrad.telegrambot.model.request.KeyboardButton
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup
-import com.pengrad.telegrambot.request.ForwardMessage
 import com.pengrad.telegrambot.request.SendMessage
 
 sealed class Command(val value: String) {
+    data object Start : Command("/start")
     data object ThrowTheme : Command("Вкинуть тему")
     data object ThrowQuestion : Command("Вкинуть вопрос")
     data object Menu : Command("В меню")
@@ -66,8 +66,10 @@ class TechTalkBot(botToken: String, adminId: Long) {
     }
 
     private fun restartIfNeed(message: Message) {
-        if (message.text() == "/start") {
-            Bot.updateUserState(message.chat().id(), State.Start)
+        val text = message.text()
+        when (text) {
+            Command.Start.value -> Bot.updateUserState(message.chat().id(), State.Start)
+            Command.Menu.value -> Bot.updateUserState(message.chat().id(), State.Idle)
         }
     }
 
@@ -104,14 +106,14 @@ class TechTalkBot(botToken: String, adminId: Long) {
             }
 
             State.SaveQuestion -> {
-                forwardMessageTo(message, Bot.adminId)
+                saveQuestion(message)
                 sendMessage(chatId, "Вопрос отправлен \uD83D\uDC4C")
                 Bot.updateUserState(chatId, State.Idle)
                 handleMessageByState(message)
             }
 
             State.SaveTheme -> {
-                forwardMessageTo(message, Bot.adminId)
+                saveTheme(message)
                 sendMessage(chatId, "Тема отправлена \uD83D\uDC4D")
                 Bot.updateUserState(chatId, State.Idle)
                 handleMessageByState(message)
@@ -152,8 +154,24 @@ fun sendMessage(chatId: Long, text: String, buttons: List<KeyboardButton> = empt
     Bot.instance.execute(request)
 }
 
-fun forwardMessageTo(message: Message, toChatId: Long) {
-    Bot.instance.execute(ForwardMessage(message.chat().id(), toChatId, message.messageId()))
+fun saveQuestion(message: Message) {
+    val text = """
+        #Вопрос
+        Автор: ${message.from().firstName()} ${message.from().lastName()}
+        --- 
+        ${message.text()}
+    """.trimIndent()
+    sendMessage(Bot.adminId, text)
+}
+
+private fun saveTheme(message: Message) {
+    val text = """
+        #Тема
+        Автор: ${message.from().firstName()} ${message.from().lastName()}
+        --- 
+        ${message.text()}
+    """.trimIndent()
+    sendMessage(Bot.adminId, text)
 }
 
 fun main() {
