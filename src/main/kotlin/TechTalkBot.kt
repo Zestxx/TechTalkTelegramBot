@@ -56,11 +56,18 @@ class TechTalkBot(botToken: String, adminId: Long) {
 
     fun start() {
         Bot.instance.setUpdatesListener { updates ->
-            updates.forEach { update ->
-                val message = update.message() ?: return@forEach
-                handleMessageByState(message)
-            }
+            updates.mapNotNull { it.message() }
+                .onEach { message ->
+                    restartIfNeed(message)
+                    handleMessageByState(message)
+                }
             UpdatesListener.CONFIRMED_UPDATES_ALL
+        }
+    }
+
+    private fun restartIfNeed(message: Message) {
+        if (message.text() == "/start") {
+            Bot.updateUserState(message.chat().id(), State.Start)
         }
     }
 
